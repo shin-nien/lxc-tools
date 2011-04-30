@@ -1,0 +1,2 @@
+
+LXC support under Debian Squeeze is pretty good but there were quite a few post-create tasks that I was always doing so here's a script to wrap it all up.

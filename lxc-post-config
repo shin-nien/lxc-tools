@@ -1,0 +1,43 @@
+#!/bin/bash
+
+name=$1
+rootfs="/var/lib/lxc/$name/rootfs"
+ip=$2
+
+# Debian config requires us to have our config in /etc/lxc so let's symlink
+ln -fs /var/lib/lxc/$name/config /etc/lxc/$name.conf
+
+# Put our container in the list to be started at boot time
+perl -pe "s|(^CONTAINERS.*)\"|\1 $name\"|" /etc/default/lxc > /tmp/lxc
+mv /tmp/lxc /etc/default/lxc
+
+# Let's our container shutdown safely when the host issues a PWR signal
+echo 'p0::powerfail:/sbin/init 0' >> $rootfs/etc/inittab
+
+echo "a"
+# Each container needs a unique mac so create one based on ip
+last=`echo $ip | cut -d'.' -f4`
+mac=`echo "obase=16; $last"|bc`
+echo "b"
+
+cat <<EOF >> /etc/lxc/$name.conf
+
+lxc.utsname = $name
+lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.link = br0
+lxc.network.hwaddr = 00:FF:12:00:00:$mac
+
+EOF
+
+cat <<EOF > $rootfs/etc/network/interfaces
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address $ip
+    netmask 255.255.255.0
+    gateway 192.168.0.1
+    dns-nameservers 192.168.0.1
+EOF

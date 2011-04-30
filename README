@@ -1,2 +1,20 @@
+LXC support under Debian Squeeze is pretty good but there were still quite a few post-create tasks that I was always doing so here's a script to wrap it all up.
 
-LXC support under Debian Squeeze is pretty good but there were quite a few post-create tasks that I was always doing so here's a script to wrap it all up.
+What it does
+============
+
+- Configures the container to start when the host boots up
+- Configures the container to shutdown nicely when it gets a PWR signal from the host
+- Configures network/interfaces for a given static IP address and generates a MAC based on the address
+
+Usage
+=====
+
+$ lxc-post-config <container> <ip on 192.168.0.0/8>
+
+Things to do
+============
+
+- Un-hardcode the netmask, gateway and DNS settings. Work it out from the host network settings.
+- Look for duplicate entries in the startup list
+- Handle passed arguments better

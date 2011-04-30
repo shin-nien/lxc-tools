@@ -11,7 +11,7 @@ ln -fs /var/lib/lxc/$name/config /etc/lxc/$name.conf
 perl -pe "s|(^CONTAINERS.*)\"|\1 $name\"|" /etc/default/lxc > /tmp/lxc
 mv /tmp/lxc /etc/default/lxc
 
-# Let's our container shutdown safely when the host issues a PWR signal
+# Lets our container shutdown safely when the host issues a PWR signal
 echo 'p0::powerfail:/sbin/init 0' >> $rootfs/etc/inittab
 
 echo "a"
